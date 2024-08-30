@@ -131,3 +131,26 @@ company-service/
 `company-service`의 `package-json`에는 `core-js`에 대해 명시하지 않았다.   
 하지만 `react-tap-event-plugin`와 `recharts` 패키지 내부에 `core-js`를 사용하기 때문에   
 최상단 `node_moduels`에 설치되었다.
+
+마지막으로, 의존성 수가 많아지게 되면 `node_modules`가 커지게 되면서
+개발자가 `npm install`로 환경을 초기 셋팅하거나 패키지 업데이트로 인해 배포가 필요하는 경우 빌드 시간이 오래 걸린다는 단점이 있다.
+
+## `Yarn Berry` 의존성 관리
+
+`package.json`에 있는 모든 의존성을 `.yarn/cache`에 의존성들을 zip 파일로 압축 저장하고, `.pnn.cjs` 파일에 의존성을 찾을 수 있는 정보를 기록한다.
+
+<img src="./img/yarn_cache_ex.png" width="100%"/>
+
+이처럼 Zip 아카이브로 의존성을 관리하면 다음과 같은 장점이 있다.
+
+1. 더이상 node_moduels를 생성할 필요가 없기 때문에 설치가 빠르다.
+2. 각 패키지 버전마다 하나의 Zip 아카이브만 가지기에 중복 설치가 되지 않는다.
+3. `node_modules` 처럼 의존성을 끌어올리지 않기 때문에 `package.json`에 기술하는 의존성만 접근 할 수 있다.
+4. 의존성을 관리할 때, `node_modules`는 전체를 지우고 재설치 한 적이 많았지만, Zip 아카이브는 변경된 의존성이나 빠지 의존성을 찾기 쉽다.
+5. 용량이 작으므로 `Git`과 같은 버전 관리 툴을 이용할 수 있다(`Zero-Install`) ➞ 동료와 100% 동일 환경을 보장함
+
+## 마무리
+
+생각보다 `yarn berry`에 대한 개념과 장점은 단순하다.(단점은 직접 사용해보면서 기입 해보겠다)   
+이러한 장점이 많기 때문에 `node_modules`를 벗어나 `yarn berry`를 도입해보자   
+[yarn berry 도입기](https://github.com/chyeon97/TIL/blob/main/yarn%20berry%20%EB%8F%84%EC%9E%85%ED%95%98%EA%B8%B0.md)
