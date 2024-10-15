@@ -38,7 +38,7 @@ CMD ["yarn", "start"] # 실행
 다음으로는 `ngnix` 이미지를 생성해준다.
 두 개의 이상의 이미지를 도커 환경에서 실행시키려면 `docker-compose`를 사용해야한다.
 
-2. `docker-compose`로 nginx 이미지 생성과 nextjs 빌드 이미지 실행하기
+2. `docker-compose.yml`로 nginx 이미지 생성과 nextjs 빌드 이미지 실행하기
 
 ```shell
 version: '3'
@@ -46,33 +46,32 @@ version: '3'
 services:
   nextjs:
     container_name: sharenode-front # 이미지 실행하면 생성되는 컨테이너 이름 설정
-    build: # 
-      context: ./
-      dockerfile: ./Dockerfile
-    restart: always
+    build: 
+      context: ./ # 현재 프로젝트 위치 명시
+      dockerfile: ./Dockerfile # 현재 프로젝트 내 Dockerfile 위치 명시
+    restart: always # always 컨테이너가 멈추면 항상 다시시작 함, 수동으로 중지된 경우 재시작되거나 컨테이너 자체가 수동으로 재시작될때만 재시작됨
     ports:
       - "3000:3000"
 
-
   nginx:
-    image: nginx:latest
+    image: nginx:latest # 도커 허브에서 이미지 가져옴
     container_name: web_server
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d:rw
-    depends_on:
+    depends_on: # 위 nextjs 작업이 끝나면 실행한다는 의미
       - nextjs
 
-
-# build.context: 현재 프로젝트 위치를 명시
-# build.dockerfile: 현재 프로젝트 내 도커파일 위치 명시
-# restart: always 컨테이너가 멈추면 항상 다시시작 함, 수동으로 중지된 경우 재시작되거나 컨테이너 자체가 수동으로 재시작될때만 재시작됨
-
 networks:
-  my_network:
+  my_network: # 두 개의 다른 컨테이너를 하나의 네트워크로 관리하여 통신함 
     external: true
-
-
-
 ```
+
+3. 도커 실행하기
+`docker compose up -d`   
+`-d` 옵션은 백그라운드에서 실행하겠다는 의미이다.
+
+위 명령어를 치고나서 ec2에 존재하는 퍼블릭 IP로 접근(포트 80) 하면 nginx 실행 화면을 볼 수 있다.
+
+4. 80포트 3000포트로 포워딩하기
